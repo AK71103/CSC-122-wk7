@@ -1,0 +1,103 @@
+// Unique-corn
+// Alexander W Kazantzis
+// 10/8/26
+
+#include <iostream>
+#include <vector>
+#include <string>
+#include <algorithm>
+#include <limits>
+
+class Unicorn {
+    private:
+    static std::vector<std::string> x;
+    std::string UniNme;
+    public:
+    //constructor
+    Unicorn(std::string Name){
+        UniNme = Name; //All Unicorns have a name unique to them
+        x.push_back(Name);
+    }
+
+    bool HasMagic = true; //All unicorns have magic till they die
+
+    ~Unicorn(){ //Destructor that kills the unicorn.
+    std::cout << "The Unicorn "<<UniNme<<" has died!\n";
+    }
+    std::string GetName() const{
+        return UniNme;
+    }
+    static bool NmeCheck(const std::string& Name) {//checks to see if this name is used.
+        return std::find(x.begin(), x.end(), Name) == x.end();
+    }
+    static void RemoveUniNme(const std::string& Name){
+        auto it = std::find(x.begin(), x.end(), Name);
+        if (it != x.end()) {
+            x.erase(it);
+    }
+    }
+};
+std::vector<std::string> Unicorn::x; //define the vector
+
+
+int main() {
+    std:: vector<Unicorn> unicorns; 
+    int choice; //initialized end choice.
+    
+    while(true){
+        std::cout <<"\nWhat would you like to do?\n";
+        std::cout <<"Add another Unicorn(1)\n";
+        std::cout <<"Subtract a unicorn (2)\n";
+        std::cout <<"end program (3)\n";
+        std::cout<<"Choice: ";
+        
+        if (!(std::cin >> choice)) {
+            std::cout << "Invalid input!\n";
+            break;
+        }
+
+        std::cin.ignore(
+            std::numeric_limits<std::streamsize>::max(), '\n'
+        );
+        if(choice == 1){ // Add a unicorn
+            std::cout <<"Enter the Unicorn's name: "; //get the unicorn's name
+            std::string name;
+            std::getline(std::cin, name);
+
+            if(Unicorn::NmeCheck(name)){ //if name is not unique
+                std::cout <<"this name is unique!\n";
+                unicorns.emplace_back(name);// create and store the unicorn here.
+            }
+            else{
+                std::cout <<"This name is taken, please choose another name!\n";
+            }
+        }
+        else if(choice == 2){ // Kill a unicorn.
+            std::string name;
+            std::cout << "Which Unicorn should be removed? ";
+            std::getline(std::cin, name);
+
+            auto it = std::find_if(
+                unicorns.begin(), unicorns.end(),
+                [&](const Unicorn& u) {
+                    return u.GetName() == name;
+                }
+            );
+
+            if (it != unicorns.end()) {
+                Unicorn::RemoveUniNme(name);
+                unicorns.erase(it);
+            } else {
+                std::cout << "Unicorn not found!\n";
+            }
+        }
+        
+        else if(choice == 3){
+            break;//exit program
+        }
+        else{
+            std::cout << "Choice invalid, choose again!";
+            break;
+        }
+    }
+}
